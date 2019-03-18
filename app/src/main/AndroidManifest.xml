@@ -11,12 +11,13 @@
             android:theme="@style/AppTheme">
         <activity android:name=".MainActivity">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-            
-                <category android:name="android.intent.category.LAUNCHER" />
+                <action android:name="android.intent.action.MAIN"/>
+
+                <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity android:name=".AddTodoActivity"></activity>
+        <activity android:name=".AddTodoActivity"/>
+        <activity android:name=".EditTodoActivity"/>
     </application>
 
 </manifest>

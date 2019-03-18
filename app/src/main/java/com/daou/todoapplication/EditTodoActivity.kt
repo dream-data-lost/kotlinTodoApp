@@ -10,20 +10,27 @@ import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
 import io.realm.Realm
-import io.realm.kotlin.createObject
 import io.realm.kotlin.where
 import kotlinx.android.synthetic.main.activity_add_todo.*
 import java.text.SimpleDateFormat
 import java.util.*
 
-class AddTodoActivity : AppCompatActivity() {
+class EditTodoActivity : AppCompatActivity() {
 
-//    private val realm = Realm.getDefaultInstance()
+    private val realm = Realm.getDefaultInstance()
+
+    private var dataId = 99999
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_todo)
 
+        val intent: Intent = intent
+
+        if(intent.hasExtra("dataItem")) {
+            val item = intent.getParcelableExtra<ParcelableDataItem>("dataItem")
+            initDataByItem(item)
+        }
         val date = Date()
         val sdFormat = SimpleDateFormat("yyyy-MM-dd", Locale.KOREAN)
         addDateView.text = sdFormat.format(date)
@@ -46,7 +53,17 @@ class AddTodoActivity : AppCompatActivity() {
                 addDateView.text = "$year-$mm-$dd"
             }, year, month, day).show()
         }
+    }
 
+    private fun initDataByItem(dataItem: ParcelableDataItem) {
+        dataId = dataItem.id
+        addTitleEditView.setText(dataItem.title)
+        addContentEditView.setText(dataItem.content)
+
+        //Realm
+//        val todo = realm.where<TodoDao>().equalTo("id", dataItem.id).findFirst()!!
+//        addTitleEditView.setText(todo.title)
+//        addContentEditView.date = todo.date
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -65,35 +82,25 @@ class AddTodoActivity : AppCompatActivity() {
                 contentValues.put("date", addDateView.text.toString())
                 contentValues.put("completed", 0)
 
-                db.insert("tb_todo", null, contentValues)
+                db.update("tb_todo", contentValues, "_id=$dataId", null)
 
                 db.close()
+
                 //Realm
-//            val newItem = realm.createObject<TodoDao>(nextId())
-//            newItem.title = addTitleEditView.text.toString()
-//            newItem.content = addContentEditView.text.toString()
-//            newItem.date = addDateView.text.toString()
-//            newItem.completed = false
+//                realm.beginTransaction()
+//                val updateItem = realm.where<TodoDao>().equalTo("id", dataId).findFirst()!!
+//                updateItem.title = addTitleEditView.text.toString()
+//                updateItem.content = addContentEditView.text.toString()
+//                updateItem.date = addDateView.text.toString()
 //
-//            realm.commitTransaction()
+//                realm.commitTransaction()
 
                 setResult(Activity.RESULT_OK)
                 finish()
             }else {
                 Toast.makeText(this, "모든 데이터가 입력되지 않았습니다.", Toast.LENGTH_SHORT).show()
             }
-
-
         }
         return super.onOptionsItemSelected(item)
     }
-
-//    private fun nextId(): Int {
-//        val maxId = realm.where<TodoDao>().max("id")
-//        if(maxId != null) {
-//            return maxId.toInt() + 1
-//        }
-//        return 0
-//    }
-
 }
