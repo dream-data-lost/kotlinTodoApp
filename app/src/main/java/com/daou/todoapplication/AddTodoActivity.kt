@@ -2,8 +2,6 @@ package com.daou.todoapplication
 
 import android.app.Activity
 import android.app.DatePickerDialog
-import android.content.ContentValues
-import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
@@ -18,7 +16,7 @@ import java.util.*
 
 class AddTodoActivity : AppCompatActivity() {
 
-//    private val realm = Realm.getDefaultInstance()
+    private val realm = Realm.getDefaultInstance()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -57,25 +55,15 @@ class AddTodoActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         if(item?.itemId == R.id.menu_add) {
             if(addTitleEditView.text.toString() != null && addContentEditView.text.toString() != null) {
-                val helper = DBHelper(this)
-                val db = helper.writableDatabase
-                val contentValues = ContentValues()
-                contentValues.put("title", addTitleEditView.text.toString())
-                contentValues.put("content", addContentEditView.text.toString())
-                contentValues.put("date", addDateView.text.toString())
-                contentValues.put("completed", 0)
+                realm.beginTransaction()
 
-                db.insert("tb_todo", null, contentValues)
+                val newTodoItem = realm.createObject<TodoDao>(nextId())
+                newTodoItem.date = addDateView.text.toString()
+                newTodoItem.title = addTitleEditView.text.toString()
+                newTodoItem.content = addContentEditView.text.toString()
+                newTodoItem.completed = false
 
-                db.close()
-                //Realm
-//            val newItem = realm.createObject<TodoDao>(nextId())
-//            newItem.title = addTitleEditView.text.toString()
-//            newItem.content = addContentEditView.text.toString()
-//            newItem.date = addDateView.text.toString()
-//            newItem.completed = false
-//
-//            realm.commitTransaction()
+                realm.commitTransaction()
 
                 setResult(Activity.RESULT_OK)
                 finish()
@@ -88,12 +76,12 @@ class AddTodoActivity : AppCompatActivity() {
         return super.onOptionsItemSelected(item)
     }
 
-//    private fun nextId(): Int {
-//        val maxId = realm.where<TodoDao>().max("id")
-//        if(maxId != null) {
-//            return maxId.toInt() + 1
-//        }
-//        return 0
-//    }
+    private fun nextId(): Long {
+        val maxId = realm.where<TodoDao>().max("id")
+        if(maxId != null) {
+            return maxId.toLong() + 1
+        }
+        return 0
+    }
 
 }

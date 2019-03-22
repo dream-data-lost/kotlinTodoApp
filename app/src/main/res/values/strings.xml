@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">TodoApplication</string>
+    <string name="title">Title</string>
+    <string name="content">Content</string>
+    <string name="x">X</string>
+    <string name="save">save</string>
 </resources>
