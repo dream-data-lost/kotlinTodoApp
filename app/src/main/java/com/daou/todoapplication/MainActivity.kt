@@ -52,12 +52,18 @@ class MainActivity : AppCompatActivity() {
 
     private fun convertListForHeader(list: RealmResults<TodoDao>) {
         val newList:MutableList<TodoDao> = mutableListOf()
+        var date: String? = null
         for(item in list) {
-            val todoItem = TodoDao(nextId())
-            todoItem.date = item.date
-            todoItem.type = 0
-            newList.add(todoItem)
-            newList.add(item)
+            if((date == null) || (!date.equals(item.date))) {
+                val headerItem = TodoDao(nextId())
+                headerItem.date = item.date
+                headerItem.type = 0
+                newList.add(headerItem)
+                newList.add(item)
+                date = item.date
+            } else {
+                newList.add(item)
+            }
         }
         todoList = newList
     }
